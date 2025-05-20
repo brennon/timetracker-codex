@@ -116,8 +116,8 @@ export default function App() {
   };
 
   return (
-    <div className="container">
-      <h1>Time Tracker</h1>
+    <div className="app-container container mt-4">
+      <h1 className="text-center">Time Tracker</h1>
       <ProjectForm name={name} onNameChange={setName} onAdd={addProject} />
       <ProjectList
         projects={projects}
