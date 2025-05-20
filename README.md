@@ -35,3 +35,5 @@ under the project name.
 
 The interface now features a styled layout with clearly separated components for
 adding projects and viewing the list.
+
+Prompt and confirmation dialogs now appear as in-app modals instead of relying on browser alerts.

@@ -3,23 +3,24 @@ import { render, screen, fireEvent, act } from '@testing-library/react';
 import { loadFeature, defineFeature } from 'jest-cucumber';
 import path from 'path';
 import App from '../App';
+import { setDialogImpl } from '../utils/dialog';
 
 const feature = loadFeature(path.join(__dirname, '../../features/stopTimer.feature'));
 
 defineFeature(feature, test => {
-  let promptSpy: jest.SpyInstance;
-  let confirmSpy: jest.SpyInstance;
+  let promptMock: jest.Mock;
+  let confirmMock: jest.Mock;
 
   beforeEach(() => {
     jest.useFakeTimers();
-    promptSpy = jest.spyOn(window, 'prompt');
-    confirmSpy = jest.spyOn(window, 'confirm');
+    promptMock = jest.fn();
+    confirmMock = jest.fn();
+    setDialogImpl({ confirm: confirmMock, prompt: promptMock });
   });
 
   afterEach(() => {
     jest.useRealTimers();
-    promptSpy.mockRestore();
-    confirmSpy.mockRestore();
+    jest.resetAllMocks();
   });
 
   test('log activity when stopping', ({ given, when, and, then }) => {
@@ -48,11 +49,13 @@ defineFeature(feature, test => {
     });
 
     and(/^the description prompt returns "([^"]*)"$/, desc => {
-      promptSpy.mockReturnValue(desc);
+      promptMock.mockResolvedValue(desc);
     });
 
-    and('the user clicks "Stop"', () => {
-      fireEvent.click(screen.getByText('Stop'));
+    and('the user clicks "Stop"', async () => {
+      await act(async () => {
+        fireEvent.click(screen.getByText('Stop'));
+      });
     });
 
     then('the project timer should display "00:00:00"', () => {
@@ -69,7 +72,7 @@ defineFeature(feature, test => {
       render(<App />);
     });
 
-    and('the user has logged "Coding" for 1 second', () => {
+    and('the user has logged "Coding" for 1 second', async () => {
       fireEvent.change(screen.getByPlaceholderText('Project name'), {
         target: { value: 'My Project' },
       });
@@ -78,8 +81,10 @@ defineFeature(feature, test => {
       act(() => {
         jest.advanceTimersByTime(1000);
       });
-      promptSpy.mockReturnValue('Coding');
-      fireEvent.click(screen.getByText('Stop'));
+      promptMock.mockResolvedValue('Coding');
+      await act(async () => {
+        fireEvent.click(screen.getByText('Stop'));
+      });
     });
 
     when('the user clicks "Start"', () => {
@@ -93,11 +98,13 @@ defineFeature(feature, test => {
     });
 
     and('the confirm to continue returns true', () => {
-      confirmSpy.mockReturnValue(true);
+      confirmMock.mockResolvedValue(true);
     });
 
-    and('the user clicks "Stop"', () => {
-      fireEvent.click(screen.getByText('Stop'));
+    and('the user clicks "Stop"', async () => {
+      await act(async () => {
+        fireEvent.click(screen.getByText('Stop'));
+      });
     });
 
     then(/^the activity list should contain "([^"]*)"$/, text => {
