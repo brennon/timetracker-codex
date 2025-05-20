@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from 'react';
-
-interface Project {
-  id: number;
-  name: string;
-  totalTime: number; // in ms
-  isRunning: boolean;
-  startTime?: number;
-}
+import ProjectForm from './components/ProjectForm';
+import ProjectList from './components/ProjectList';
+import { Project } from './components/ProjectItem';
+import './App.css';
 
 const loadProjects = (): Project[] => {
   if (typeof localStorage === 'undefined') {
@@ -76,30 +72,15 @@ export default function App() {
   };
 
   return (
-    <div>
+    <div className="container">
       <h1>Time Tracker</h1>
-      <div>
-        <input
-          value={name}
-          onChange={e => setName(e.target.value)}
-          placeholder="Project name"
-        />
-        <button onClick={addProject}>Add Project</button>
-      </div>
-      <ul>
-        {projects.map(p => {
-          const runningTime = p.isRunning && p.startTime ? now - p.startTime : 0;
-          return (
-            <li key={p.id}>
-              <span>{p.name}</span>
-              <span> {formatTime(p.totalTime + runningTime)}</span>
-              <button onClick={() => toggleTimer(p.id)}>
-                {p.isRunning ? 'Stop' : 'Start'}
-              </button>
-            </li>
-          );
-        })}
-      </ul>
+      <ProjectForm name={name} onNameChange={setName} onAdd={addProject} />
+      <ProjectList
+        projects={projects}
+        now={now}
+        formatTime={formatTime}
+        onToggle={toggleTimer}
+      />
     </div>
   );
 }

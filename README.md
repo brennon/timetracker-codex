@@ -25,3 +25,6 @@ The application stores data in your browser `localStorage`.
 Click "Start" next to a project to begin tracking time. When a project is running a "Stop" button lets you end the timer.
 
 Timers update automatically while running so you can watch progress in real time.
+
+The interface now features a styled layout with clearly separated components for
+adding projects and viewing the list.
