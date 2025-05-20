@@ -38,14 +38,15 @@ export default function App() {
     setName('');
   };
 
-  const startTimer = (id: number) => {
+  const toggleTimer = (id: number) => {
     setProjects(prev =>
       prev.map(p => {
         if (p.id === id) {
-          if (!p.isRunning) {
-            return { ...p, isRunning: true, startTime: Date.now() };
+          if (p.isRunning && p.startTime) {
+            const elapsed = Date.now() - p.startTime;
+            return { ...p, isRunning: false, totalTime: p.totalTime + elapsed, startTime: undefined };
           }
-          return p;
+          return { ...p, isRunning: true, startTime: Date.now() };
         }
         if (p.isRunning && p.startTime) {
           const elapsed = Date.now() - p.startTime;
@@ -86,8 +87,8 @@ export default function App() {
             <li key={p.id}>
               <span>{p.name}</span>
               <span> {formatTime(p.totalTime + runningTime)}</span>
-              <button onClick={() => startTimer(p.id)}>
-                {p.isRunning ? 'Running' : 'Start'}
+              <button onClick={() => toggleTimer(p.id)}>
+                {p.isRunning ? 'Stop' : 'Start'}
               </button>
             </li>
           );
