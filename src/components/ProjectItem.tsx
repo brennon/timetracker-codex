@@ -28,14 +28,16 @@ export default function ProjectItem({ project, now, formatTime, onToggle }: Prop
   }, {});
   return (
     <li className="project-item">
-      <div>
-        <span>{project.name}</span>
-        <span>{formatTime(runningTime)}</span>
+      <div className="project-header">
+        <div className="project-info">
+          <span className="project-name">{project.name}</span>
+          <span className="project-time">{formatTime(runningTime)}</span>
+        </div>
+        <button onClick={() => onToggle(project.id)}>
+          {project.isRunning ? 'Stop' : 'Start'}
+        </button>
       </div>
-      <button onClick={() => onToggle(project.id)}>
-        {project.isRunning ? 'Stop' : 'Start'}
-      </button>
-      <ul>
+      <ul className="activity-list">
         {Object.entries(totals).map(([desc, time]) => (
           <li key={desc}>{`${desc} - ${formatTime(time)}`}</li>
         ))}
