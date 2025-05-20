@@ -12,6 +12,9 @@ A simple time tracking web application built with React and TypeScript.
    ```bash
    npm run dev
    ```
+   The entry file `index.html` is located in the repository root, so visiting
+   `http://localhost:3000/` after running the dev server will load the
+   application.
 3. Run tests
    ```bash
    npm test
