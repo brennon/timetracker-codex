@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { confirm as showConfirm, prompt as showPrompt } from './utils/dialog';
 import ProjectForm from './components/ProjectForm';
 import ProjectList from './components/ProjectList';
 import { Project } from './components/ProjectItem';
@@ -22,22 +23,25 @@ const saveProjects = (projects: Project[]) => {
   localStorage.setItem('projects', JSON.stringify(projects));
 };
 
-const stopProjectTimer = (project: Project): Project => {
-  if (!project.startTime) return { ...project, isRunning: false, startTime: undefined };
+const stopProjectTimer = async (project: Project): Promise<Project> => {
+  if (!project.startTime)
+    return { ...project, isRunning: false, startTime: undefined };
   const elapsed = Date.now() - project.startTime;
   const last = project.activities[project.activities.length - 1];
   let description = '';
   if (last) {
-    const cont = window.confirm(
+    const cont = await showConfirm(
       `Project "${project.name}" last activity was "${last.description}". Continue?`
     );
     if (cont) {
       description = last.description;
     } else {
-      description = window.prompt(`Describe work done on "${project.name}"`) || 'Unspecified';
+      const input = await showPrompt(`Describe work done on "${project.name}"`);
+      description = input || 'Unspecified';
     }
   } else {
-    description = window.prompt(`Describe work done on "${project.name}"`) || 'Unspecified';
+    const input = await showPrompt(`Describe work done on "${project.name}"`);
+    description = input || 'Unspecified';
   }
   return {
     ...project,
@@ -70,32 +74,33 @@ export default function App() {
     setName('');
   };
 
-  const toggleTimer = (id: number) => {
-    setProjects(prev => {
-      const target = prev.find(p => p.id === id);
-      if (!target) return prev;
+  const toggleTimer = async (id: number) => {
+    const target = projects.find(p => p.id === id);
+    if (!target) return;
 
-      let stopOthers = false;
-      if (!target.isRunning) {
-        const otherRunning = prev.some(p => p.id !== id && p.isRunning);
-        if (otherRunning) {
-          stopOthers = window.confirm('Stop other running timers?');
-        }
+    let stopOthers = false;
+    if (!target.isRunning) {
+      const otherRunning = projects.some(p => p.id !== id && p.isRunning);
+      if (otherRunning) {
+        stopOthers = await showConfirm('Stop other running timers?');
       }
+    }
 
-      return prev.map(p => {
-        if (p.id === id) {
-          if (p.isRunning && p.startTime) {
-            return stopProjectTimer(p);
-          }
-          return { ...p, isRunning: true, startTime: Date.now() };
+    const updated = [] as Project[];
+    for (const p of projects) {
+      if (p.id === id) {
+        if (p.isRunning && p.startTime) {
+          updated.push(await stopProjectTimer(p));
+        } else {
+          updated.push({ ...p, isRunning: true, startTime: Date.now() });
         }
-        if (stopOthers && p.isRunning) {
-          return stopProjectTimer(p);
-        }
-        return p;
-      });
-    });
+      } else if (stopOthers && p.isRunning) {
+        updated.push(await stopProjectTimer(p));
+      } else {
+        updated.push(p);
+      }
+    }
+    setProjects(updated);
   };
 
   const formatTime = (ms: number) => {

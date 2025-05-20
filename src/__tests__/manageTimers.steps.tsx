@@ -1,8 +1,9 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { loadFeature, defineFeature } from 'jest-cucumber';
 import path from 'path';
 import App from '../App';
+import { setDialogImpl } from '../utils/dialog';
 
 const feature = loadFeature(path.join(__dirname, '../../features/manageTimers.feature'));
 
@@ -14,18 +15,17 @@ defineFeature(feature, test => {
       .querySelector('button') as HTMLButtonElement;
   };
 
-  let confirmSpy: jest.SpyInstance;
-  let promptSpy: jest.SpyInstance;
+  let confirmMock: jest.Mock;
+  let promptMock: jest.Mock;
 
   beforeEach(() => {
-    confirmSpy = jest.spyOn(window, 'confirm');
-    promptSpy = jest.spyOn(window, 'prompt');
-    promptSpy.mockReturnValue('work');
+    confirmMock = jest.fn();
+    promptMock = jest.fn().mockResolvedValue('work');
+    setDialogImpl({ confirm: confirmMock, prompt: promptMock });
   });
 
   afterEach(() => {
-    confirmSpy.mockRestore();
-    promptSpy.mockRestore();
+    jest.resetAllMocks();
   });
 
   const setupTwoProjects = () => {
@@ -52,9 +52,11 @@ defineFeature(feature, test => {
       fireEvent.click(getButtonFor('Project 1'));
     });
 
-    when('the user confirms stopping timers and starts the second project', () => {
-      confirmSpy.mockReturnValue(true);
-      fireEvent.click(getButtonFor('Project 2'));
+    when('the user confirms stopping timers and starts the second project', async () => {
+      confirmMock.mockResolvedValue(true);
+      await act(async () => {
+        fireEvent.click(getButtonFor('Project 2'));
+      });
     });
 
     then('the first project button should display "Start"', () => {
@@ -79,9 +81,11 @@ defineFeature(feature, test => {
       fireEvent.click(getButtonFor('Project 1'));
     });
 
-    when('the user declines stopping timers and starts the second project', () => {
-      confirmSpy.mockReturnValue(false);
-      fireEvent.click(getButtonFor('Project 2'));
+    when('the user declines stopping timers and starts the second project', async () => {
+      confirmMock.mockResolvedValue(false);
+      await act(async () => {
+        fireEvent.click(getButtonFor('Project 2'));
+      });
     });
 
     then('the first project button should display "Stop"', () => {
