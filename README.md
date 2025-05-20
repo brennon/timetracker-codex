@@ -39,3 +39,5 @@ adding projects and viewing the list.
 Projects are displayed as cards with their details neatly aligned for improved readability.
 
 Prompt and confirmation dialogs now appear as in-app modals instead of relying on browser alerts.
+
+The styling has been enhanced with [Bootstrap](https://getbootstrap.com/) loaded via CDN to provide a clean look without adding complex dependencies.

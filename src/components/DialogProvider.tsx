@@ -50,20 +50,28 @@ export const DialogProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       {children}
       {state && state.type === 'confirm' && (
         <div className="modal-overlay">
-          <div className="modal">
+          <div className="modal-dialog bg-white p-3 rounded">
             <p>{state.message}</p>
-            <button onClick={() => handleConfirm(true)}>OK</button>
-            <button onClick={() => handleConfirm(false)}>Cancel</button>
+            <div className="d-flex gap-2 justify-content-end">
+              <button className="btn btn-primary" onClick={() => handleConfirm(true)}>OK</button>
+              <button className="btn btn-secondary" onClick={() => handleConfirm(false)}>Cancel</button>
+            </div>
           </div>
         </div>
       )}
       {state && state.type === 'prompt' && (
         <div className="modal-overlay">
-          <div className="modal">
+          <div className="modal-dialog bg-white p-3 rounded">
             <p>{state.message}</p>
-            <input value={input} onChange={e => setInput(e.target.value)} />
-            <button onClick={() => handlePrompt(input)}>OK</button>
-            <button onClick={() => handlePrompt(null)}>Cancel</button>
+            <input
+              className="form-control mb-2"
+              value={input}
+              onChange={e => setInput(e.target.value)}
+            />
+            <div className="d-flex gap-2 justify-content-end">
+              <button className="btn btn-primary" onClick={() => handlePrompt(input)}>OK</button>
+              <button className="btn btn-secondary" onClick={() => handlePrompt(null)}>Cancel</button>
+            </div>
           </div>
         </div>
       )}

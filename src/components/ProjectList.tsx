@@ -10,7 +10,7 @@ interface Props {
 
 export default function ProjectList({ projects, now, formatTime, onToggle }: Props) {
   return (
-    <ul className="project-list">
+    <ul className="project-list list-unstyled p-0">
       {projects.map(project => (
         <ProjectItem
           key={project.id}

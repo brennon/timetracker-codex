@@ -27,17 +27,17 @@ export default function ProjectItem({ project, now, formatTime, onToggle }: Prop
     return acc;
   }, {});
   return (
-    <li className="project-item">
-      <div className="project-header">
-        <div className="project-info">
-          <span className="project-name">{project.name}</span>
+    <li className="project-item card mb-3">
+      <div className="project-header card-body d-flex justify-content-between align-items-center">
+        <div className="project-info d-flex gap-3 flex-grow-1 justify-content-between">
+          <span className="project-name fw-bold">{project.name}</span>
           <span className="project-time">{formatTime(runningTime)}</span>
         </div>
-        <button onClick={() => onToggle(project.id)}>
+        <button className="btn btn-outline-primary" onClick={() => onToggle(project.id)}>
           {project.isRunning ? 'Stop' : 'Start'}
         </button>
       </div>
-      <ul className="activity-list">
+      <ul className="activity-list list-unstyled mb-0 px-3 pb-3">
         {Object.entries(totals).map(([desc, time]) => (
           <li key={desc}>{`${desc} - ${formatTime(time)}`}</li>
         ))}
