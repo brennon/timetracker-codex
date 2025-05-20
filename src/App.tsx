@@ -41,8 +41,19 @@ export default function App() {
   };
 
   const toggleTimer = (id: number) => {
-    setProjects(prev =>
-      prev.map(p => {
+    setProjects(prev => {
+      const target = prev.find(p => p.id === id);
+      if (!target) return prev;
+
+      let stopOthers = false;
+      if (!target.isRunning) {
+        const otherRunning = prev.some(p => p.id !== id && p.isRunning);
+        if (otherRunning) {
+          stopOthers = window.confirm('Stop other running timers?');
+        }
+      }
+
+      return prev.map(p => {
         if (p.id === id) {
           if (p.isRunning && p.startTime) {
             const elapsed = Date.now() - p.startTime;
@@ -50,13 +61,13 @@ export default function App() {
           }
           return { ...p, isRunning: true, startTime: Date.now() };
         }
-        if (p.isRunning && p.startTime) {
+        if (stopOthers && p.isRunning && p.startTime) {
           const elapsed = Date.now() - p.startTime;
           return { ...p, isRunning: false, totalTime: p.totalTime + elapsed, startTime: undefined };
         }
         return p;
-      })
-    );
+      });
+    });
   };
 
   const formatTime = (ms: number) => {

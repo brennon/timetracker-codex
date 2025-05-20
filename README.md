@@ -26,5 +26,8 @@ Click "Start" next to a project to begin tracking time. When a project is runnin
 
 Timers update automatically while running so you can watch progress in real time.
 
+Starting a timer while others are active prompts you to choose whether to stop
+the running timers. Declining allows multiple timers to run concurrently.
+
 The interface now features a styled layout with clearly separated components for
 adding projects and viewing the list.
