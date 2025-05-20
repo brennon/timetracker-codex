@@ -9,11 +9,15 @@ interface Project {
 }
 
 const loadProjects = (): Project[] => {
+  if (typeof localStorage === 'undefined') {
+    return [];
+  }
   const data = localStorage.getItem('projects');
   return data ? JSON.parse(data) : [];
 };
 
 const saveProjects = (projects: Project[]) => {
+  if (typeof localStorage === 'undefined') return;
   localStorage.setItem('projects', JSON.stringify(projects));
 };
 

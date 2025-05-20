@@ -1,9 +1,10 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { loadFeature, defineFeature } from 'jest-cucumber';
+import path from 'path';
 import App from '../App';
 
-const feature = loadFeature('../../features/addProject.feature');
+const feature = loadFeature(path.join(__dirname, '../../features/addProject.feature'));
 
 defineFeature(feature, test => {
   test('add a project to the list', ({ given, when, then, and }) => {
