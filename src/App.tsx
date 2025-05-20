@@ -24,6 +24,12 @@ const saveProjects = (projects: Project[]) => {
 export default function App() {
   const [projects, setProjects] = useState<Project[]>(loadProjects);
   const [name, setName] = useState('');
+  const [now, setNow] = useState(Date.now());
+
+  useEffect(() => {
+    const interval = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     saveProjects(projects);
@@ -82,7 +88,7 @@ export default function App() {
       </div>
       <ul>
         {projects.map(p => {
-          const runningTime = p.isRunning && p.startTime ? Date.now() - p.startTime : 0;
+          const runningTime = p.isRunning && p.startTime ? now - p.startTime : 0;
           return (
             <li key={p.id}>
               <span>{p.name}</span>
