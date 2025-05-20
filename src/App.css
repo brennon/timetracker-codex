@@ -43,19 +43,36 @@ h1 {
 }
 
 .project-item {
+  background: #fafafa;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+  list-style: none;
+}
+
+.project-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid #eee;
+  gap: 8px;
 }
 
-.project-item:last-child {
-  border-bottom: none;
+.project-info {
+  display: flex;
+  justify-content: space-between;
+  flex: 1;
+  gap: 16px;
 }
 
 .project-item button {
   padding: 4px 12px;
+}
+
+.activity-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 8px 0 0;
 }
 
 .modal-overlay {
