@@ -9,12 +9,42 @@ const loadProjects = (): Project[] => {
     return [];
   }
   const data = localStorage.getItem('projects');
-  return data ? JSON.parse(data) : [];
+  return data
+    ? (JSON.parse(data) as Project[]).map(p => ({
+        ...p,
+        activities: p.activities || [],
+      }))
+    : [];
 };
 
 const saveProjects = (projects: Project[]) => {
   if (typeof localStorage === 'undefined') return;
   localStorage.setItem('projects', JSON.stringify(projects));
+};
+
+const stopProjectTimer = (project: Project): Project => {
+  if (!project.startTime) return { ...project, isRunning: false, startTime: undefined };
+  const elapsed = Date.now() - project.startTime;
+  const last = project.activities[project.activities.length - 1];
+  let description = '';
+  if (last) {
+    const cont = window.confirm(
+      `Project "${project.name}" last activity was "${last.description}". Continue?`
+    );
+    if (cont) {
+      description = last.description;
+    } else {
+      description = window.prompt(`Describe work done on "${project.name}"`) || 'Unspecified';
+    }
+  } else {
+    description = window.prompt(`Describe work done on "${project.name}"`) || 'Unspecified';
+  }
+  return {
+    ...project,
+    isRunning: false,
+    startTime: undefined,
+    activities: [...project.activities, { description, duration: elapsed }],
+  };
 };
 
 export default function App() {
@@ -35,7 +65,7 @@ export default function App() {
     if (!name.trim()) return;
     setProjects([
       ...projects,
-      { id: Date.now(), name, totalTime: 0, isRunning: false },
+      { id: Date.now(), name, isRunning: false, activities: [] },
     ]);
     setName('');
   };
@@ -56,14 +86,12 @@ export default function App() {
       return prev.map(p => {
         if (p.id === id) {
           if (p.isRunning && p.startTime) {
-            const elapsed = Date.now() - p.startTime;
-            return { ...p, isRunning: false, totalTime: p.totalTime + elapsed, startTime: undefined };
+            return stopProjectTimer(p);
           }
           return { ...p, isRunning: true, startTime: Date.now() };
         }
-        if (stopOthers && p.isRunning && p.startTime) {
-          const elapsed = Date.now() - p.startTime;
-          return { ...p, isRunning: false, totalTime: p.totalTime + elapsed, startTime: undefined };
+        if (stopOthers && p.isRunning) {
+          return stopProjectTimer(p);
         }
         return p;
       });

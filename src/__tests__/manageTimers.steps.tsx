@@ -15,13 +15,17 @@ defineFeature(feature, test => {
   };
 
   let confirmSpy: jest.SpyInstance;
+  let promptSpy: jest.SpyInstance;
 
   beforeEach(() => {
     confirmSpy = jest.spyOn(window, 'confirm');
+    promptSpy = jest.spyOn(window, 'prompt');
+    promptSpy.mockReturnValue('work');
   });
 
   afterEach(() => {
     confirmSpy.mockRestore();
+    promptSpy.mockRestore();
   });
 
   const setupTwoProjects = () => {
